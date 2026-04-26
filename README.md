@@ -226,7 +226,7 @@ Além das regras de venda, a plataforma possui **controle ativo de inventário p
 
 ### 🧭 Fluxo visual do worker de inventário
 
-![Fluxo assíncrono de vendas](./images/fluxo-venda-async.png)
+![Fluxo visual do worker de inventario](./images/fluxo-worker-inventario.png)
 
 Notas práticas:
 
