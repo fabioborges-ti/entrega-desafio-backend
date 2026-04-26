@@ -14,7 +14,7 @@
 - [Usuários Pré-cadastrados](#-usuários-pré-cadastrados)
 - [Endpoints Principais](#-endpoints-principais)
 - [Regras de Negócio](#-regras-de-negócio)
-- [Fluxo de cancelamento ou deleção da venda](#-fluxo-de-cancelamento-ou-deleção-da-venda)
+- [Fluxo de cancelamento ou deleção da venda](#fluxo-cancelamento-delecao)
 - [Testes](#-testes)
 - [Decisões Técnicas](#-decisões-técnicas)
 - [Melhorias Futuras](#-melhorias-futuras)
@@ -234,6 +234,8 @@ Notas práticas:
 - O worker envia alerta quando `AvailableQuantity <= MinimumStockAlert`.
 - Defina `MinimumStockAlert = 0` para desativar alerta de um produto específico.
 - Se credenciais/e-mails não estiverem configurados, o worker continua rodando e registra warning em log sem interromper a aplicação.
+
+<a id="fluxo-cancelamento-delecao"></a>
 
 ## ♻️ Fluxo de cancelamento ou deleção da venda
 
