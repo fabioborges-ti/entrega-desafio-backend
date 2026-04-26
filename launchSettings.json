@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "composeLaunchServiceName": "webapi",
+      "composeLaunchAction": "LaunchBrowser",
+      "composeLaunchUrl": "http://localhost:8080/scalar/v1",
+      "serviceActions": {
+        "webapi": "StartDebugging",
+        "database": "StartWithoutDebugging",
+        "rabbitmq": "StartWithoutDebugging"
+      }
+    }
+  }
+}

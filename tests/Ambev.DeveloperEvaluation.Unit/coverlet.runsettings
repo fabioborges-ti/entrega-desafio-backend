@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat code coverage">
+        <Configuration>
+          <Format>cobertura</Format>
+          <Exclude>[*]*.Migrations.*,[*]*Program,[*]*Startup,[Ambev.DeveloperEvaluation.IoC]*,[Ambev.DeveloperEvaluation.ORM]*,[Ambev.DeveloperEvaluation.WebApi]*Profile,[Ambev.DeveloperEvaluation.Application]*Profile,[Ambev.DeveloperEvaluation.Common]*HealthChecksExtension,[Ambev.DeveloperEvaluation.Common]*AuthenticationExtension,[Ambev.DeveloperEvaluation.Common]*LoggingExtension,[Ambev.DeveloperEvaluation.WebApi]*EnsureInitialAdminHostedService,[Ambev.DeveloperEvaluation.WebApi]*DatabaseMigrationExtensions,[Ambev.DeveloperEvaluation.Application]*DefaultAdminUserSeed</Exclude>
+          <ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverageAttribute</ExcludeByAttribute>
+          <ExcludeByFile>**/Migrations/**</ExcludeByFile>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>
