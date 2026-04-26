@@ -226,19 +226,7 @@ Além das regras de venda, a plataforma possui **controle ativo de inventário p
 
 ### 🧭 Fluxo visual do worker de inventário
 
-```mermaid
-flowchart LR
-    A[StockAlertHostedService inicia] --> B[Espera 30s apos start da API]
-    B --> C[Executa verificacao periodica]
-    C --> D[Consulta inventario abaixo do minimo]
-    D --> E{Ha produtos criticos?}
-    E -- Nao --> F[Registra log e aguarda proximo ciclo]
-    E -- Sim --> G[Monta e-mail consolidado]
-    G --> H[Envia alerta ao administrador]
-    H --> I[Registra sucesso ou falha no envio]
-    F --> C
-    I --> C
-```
+![Fluxo assíncrono de vendas](./images/fluxo-venda-async.png)
 
 Notas práticas:
 
