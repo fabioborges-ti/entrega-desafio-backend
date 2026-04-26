@@ -18,6 +18,7 @@
 - [Testes](#-testes)
 - [Decisões Técnicas](#-decisões-técnicas)
 - [Melhorias Futuras](#-melhorias-futuras)
+- [Documentação Complementar](#-documentação-complementar)
 
 ---
 
@@ -201,7 +202,7 @@ A documentação completa está no Swagger/Scalar. Resumo dos recursos:
 | `GET` | `/api/sales/{id}` | `200 OK` | Obtém venda por ID |
 | `GET` | `/api/sales` | `200 OK` | Lista vendas paginadas |
 | `PUT` | `/api/sales/{id}` | `202 Accepted` | Enfileira atualização (assíncrono) |
-| `PATCH` | `/api/sales/{id}/cancel` | `202 Accepted` | Cancela venda (assíncrono) |
+| `POST` | `/api/sales/{id}/cancel` | `202 Accepted` | Cancela venda (assíncrono) |
 | `DELETE` | `/api/sales/{id}` | `202 Accepted` | Remove venda (assíncrono) |
 
 > Operações de escrita retornam `{ correlationId }` para rastreamento do processamento. Veja [README.sales-async.md](./README.sales-async.md) para o fluxo completo.
@@ -243,7 +244,7 @@ Este fluxo é um ponto crítico da solução porque precisa manter consistência
 
 ### Entrada HTTP e processamento assíncrono
 
-- `PATCH /api/sales/{id}/cancel`: enfileira cancelamento.
+- `POST /api/sales/{id}/cancel`: enfileira cancelamento.
 - `DELETE /api/sales/{id}`: enfileira deleção.
 - Em ambos os casos, a API retorna `202 Accepted` com `correlationId`.
 
@@ -387,6 +388,7 @@ dotnet test tests/Ambev.DeveloperEvaluation.Unit
 |---|---|
 | [README.sales-async.md](./README.sales-async.md) | Filas, correlationId, fluxo assíncrono de vendas |
 | [README.secrets.md](./README.secrets.md) | Variáveis de ambiente, `.env`, segredos JWT |
+| [README.permissions.md](./README.permissions.md) | Controllers, endpoints e matriz de permissões por role |
 
 ---
 
