@@ -14,6 +14,7 @@
 - [Usuários Pré-cadastrados](#-usuários-pré-cadastrados)
 - [Endpoints Principais](#-endpoints-principais)
 - [Regras de Negócio](#-regras-de-negócio)
+- [Fluxo de cancelamento ou deleção da venda](#-fluxo-de-cancelamento-ou-deleção-da-venda)
 - [Testes](#-testes)
 - [Decisões Técnicas](#-decisões-técnicas)
 - [Melhorias Futuras](#-melhorias-futuras)
@@ -233,6 +234,67 @@ Notas práticas:
 - O worker envia alerta quando `AvailableQuantity <= MinimumStockAlert`.
 - Defina `MinimumStockAlert = 0` para desativar alerta de um produto específico.
 - Se credenciais/e-mails não estiverem configurados, o worker continua rodando e registra warning em log sem interromper a aplicação.
+
+## ♻️ Fluxo de cancelamento ou deleção da venda
+
+Este fluxo é um ponto crítico da solução porque precisa manter consistência entre **venda**, **carrinho** e **inventário** mesmo com processamento assíncrono.
+
+### Entrada HTTP e processamento assíncrono
+
+- `PATCH /api/sales/{id}/cancel`: enfileira cancelamento.
+- `DELETE /api/sales/{id}`: enfileira deleção.
+- Em ambos os casos, a API retorna `202 Accepted` com `correlationId`.
+
+Após o enfileiramento, o consumer RabbitMQ processa a mensagem em background, atualizando o status (`Queued`, `Processing`, `Retrying`, `Succeeded`, `DeadLettered`) consultável por `correlationId`.
+
+### O que acontece no cancelamento
+
+No cancelamento (`CancelWithCartAndStockReturnAsync`), quando a venda existe e ainda não está cancelada:
+
+1. Carrega venda e carrinho vinculado (se existir).
+2. Inicia transação de banco.
+3. Marca a venda como cancelada (`IsCancelled = true`) e zera o total.
+4. Desvincula `CartId` da venda antes de remover o carrinho (ordem necessária por FK com `Restrict`).
+5. Agrega as quantidades do carrinho por produto e estorna o estoque no inventário.
+6. Remove o carrinho associado.
+7. Faz commit da transação.
+
+Comportamento de negócio no cancelamento:
+
+- `NotFound`: venda não encontrada.
+- `AlreadyCancelled`: operação idempotente (retorna sucesso sem novo efeito colateral).
+- `Cancelled`: cancelamento aplicado com estorno.
+
+### O que acontece na deleção
+
+Na deleção (`DeleteWithCartAndStockReturnAsync`), quando a venda existe:
+
+1. Carrega venda e carrinho vinculado (se existir).
+2. Inicia transação.
+3. Remove a venda primeiro (também por causa da FK `Restrict` com carrinho).
+4. Estorna o estoque com base nas quantidades agregadas do carrinho por produto.
+5. Remove o carrinho.
+6. Faz commit.
+
+Se a venda não existir, o fluxo retorna erro de não encontrado.
+
+### Diferenças práticas: cancelar x deletar
+
+| Aspecto | Cancelar venda | Deletar venda |
+|---|---|---|
+| Registro da venda | Mantido | Removido |
+| Estado final | `IsCancelled = true` e total zerado | Entidade excluída |
+| Idempotência | Sim (já cancelada não reaplica efeitos) | Não (nova tentativa tende a `NotFound`) |
+| Estorno de estoque | Sim | Sim |
+| Remoção de carrinho associado | Sim | Sim |
+
+### Pontos críticos avaliativos
+
+- **Consistência transacional**: cancelamento/deleção e estorno ocorrem na mesma transação; em falha, há rollback total.
+- **Ordem sensível por integridade referencial**: a sequência de desvincular/remover venda antes do carrinho é essencial para não violar FK.
+- **Acoplamento do estorno ao carrinho**: o estorno usa os itens do carrinho; inconsistências de dados entre venda e carrinho afetam o resultado.
+- **Natureza assíncrona**: o `202` apenas confirma enfileiramento; o resultado real depende do processamento posterior.
+- **Status store em memória**: o rastreamento por `correlationId` não persiste reinício da API, limitando observabilidade em produção.
 
 ### ⚙️ Configuração rápida do alerta de estoque
 
