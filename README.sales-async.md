@@ -207,34 +207,6 @@ Configuracao por ambiente (Docker):
 
 ---
 
-## 🛠️ Script para Gerar o Diagrama
-
-Foi adicionado o script PowerShell:
-
-- `scripts/Generate-SalesFlowDiagram.ps1`
-
-Ele gera:
-
-- `images/diagrams/sales-purchase-flow.mmd`
-- `images/diagrams/sales-purchase-flow.svg`
-- `images/diagrams/sales-purchase-flow.png`
-
-Execucao:
-
-```powershell
-./scripts/Generate-SalesFlowDiagram.ps1
-```
-
-Opcionalmente, para definir pasta de saida:
-
-```powershell
-./scripts/Generate-SalesFlowDiagram.ps1 -OutputDir "images/diagrams"
-```
-
-Requisito: Node.js com `npx` disponivel para executar `@mermaid-js/mermaid-cli`.
-
----
-
 ## ✅ Como Validar Rapidamente
 
 1. Subir stack com RabbitMQ + PostgreSQL + API.
