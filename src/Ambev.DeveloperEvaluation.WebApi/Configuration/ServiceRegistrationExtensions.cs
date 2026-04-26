@@ -49,7 +49,7 @@ public static class ServiceRegistrationExtensions
         services.AddHostedService<SaleCommandConsumerBackgroundService>();
 
         services.Configure<StockAlertOptions>(configuration.GetSection(StockAlertOptions.SectionName));
-        services.AddHttpClient<IStockAlertEmailService, BrevoStockAlertEmailService>();
+        services.AddHttpClient<IStockAlertEmailService, MailjetStockAlertEmailService>();
         services.AddHostedService<StockAlertHostedService>();
 
         return services;

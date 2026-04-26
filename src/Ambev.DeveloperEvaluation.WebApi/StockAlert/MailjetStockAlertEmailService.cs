@@ -11,24 +11,28 @@ namespace Ambev.DeveloperEvaluation.WebApi.StockAlert;
 /// Implementação de <see cref="IStockAlertEmailService"/> usando a API REST do Mailjet.
 /// Documentação: https://dev.mailjet.com/email/reference/send-emails/
 /// </summary>
-public class BrevoStockAlertEmailService : IStockAlertEmailService
+public class MailjetStockAlertEmailService : IStockAlertEmailService
 {
     private const string MailjetApiUrl = "https://api.mailjet.com/v3.1/send";
 
     private readonly HttpClient _httpClient;
     private readonly StockAlertOptions _options;
-    private readonly ILogger<BrevoStockAlertEmailService> _logger;
+    private readonly ILogger<MailjetStockAlertEmailService> _logger;
 
-    public BrevoStockAlertEmailService(
+    /// <summary>
+    /// Inicializa uma nova instância do serviço de envio de alertas via Mailjet.
+    /// </summary>
+    public MailjetStockAlertEmailService(
         HttpClient httpClient,
         IOptions<StockAlertOptions> options,
-        ILogger<BrevoStockAlertEmailService> logger)
+        ILogger<MailjetStockAlertEmailService> logger)
     {
         _httpClient = httpClient;
         _options = options.Value;
         _logger = logger;
     }
 
+    /// <inheritdoc />
     public async Task SendLowStockAlertAsync(IReadOnlyList<Inventory> items, CancellationToken cancellationToken = default)
     {
         if (items.Count == 0)
