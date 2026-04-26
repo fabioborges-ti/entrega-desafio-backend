@@ -11,3 +11,6 @@
 # Build artifacts
 **/bin/
 **/obj/
+
+# IDE artifacts
+.vs/
