@@ -131,30 +131,35 @@ API REST para gerenciamento de vendas com foco em clareza de domínio e boas pr�
 
 ### Pré-requisitos
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado e em execução
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado e em execução.
+- Criar o arquivo `.env` na raiz do projeto a partir do `.env.example`:
 
-### Subindo tudo com Docker Compose
+```powershell
+copy .env.example .env
+```
+
+> O arquivo `.env` é obrigatório para subir a stack local com as variáveis esperadas.
+
+### Execução com Visual Studio (opcional)
+
+- Abrir a solução `Ambev.DeveloperEvaluation.sln`.
+- Definir `docker-compose` como projeto de inicialização (Startup Project).
+- Executar (`F5` / `Ctrl+F5`).
+
+### Execução por linha de comando
 
 ```bash
-# Clone o repositório e entre na pasta
-git clone <repo-url>
-cd template/backend
-
-# Copie o arquivo de variáveis de ambiente e ajuste se necessário
-copy .env.example .env
-
-# Suba todos os serviços
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 Aguarde os health checks de `database` e `rabbitmq` passarem. A API aplica migrations e seeds automaticamente na inicialização.
 
 ```bash
 # Parar os serviços
-docker-compose down
+docker compose down
 
 # Parar e remover volumes (reset completo do banco)
-docker-compose down -v
+docker compose down -v
 ```
 
 ---

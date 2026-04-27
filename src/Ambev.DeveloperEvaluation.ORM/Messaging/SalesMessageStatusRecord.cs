@@ -1,19 +1,10 @@
-namespace Ambev.DeveloperEvaluation.WebApi.Messaging.Sales;
+namespace Ambev.DeveloperEvaluation.ORM.Messaging;
 
-public enum SalesMessageProcessingState
-{
-    Queued,
-    Processing,
-    Retrying,
-    Succeeded,
-    DeadLettered
-}
-
-public sealed class SalesMessageStatus
+public sealed class SalesMessageStatusRecord
 {
     public string CorrelationId { get; set; } = string.Empty;
     public string EventName { get; set; } = string.Empty;
-    public SalesMessageProcessingState State { get; set; }
+    public string State { get; set; } = string.Empty;
     public int Attempts { get; set; }
     public DateTime CreatedAtUtc { get; set; }
     public DateTime UpdatedAtUtc { get; set; }

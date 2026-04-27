@@ -6,7 +6,7 @@ public sealed class InMemorySalesMessageStatusStore : ISalesMessageStatusStore
 {
     private readonly ConcurrentDictionary<string, SalesMessageStatus> _statuses = new();
 
-    public void MarkQueued(string correlationId, string eventName)
+    public void MarkQueued(string correlationId, string eventName, string? payloadJson = null)
     {
         var now = DateTime.UtcNow;
         _statuses[correlationId] = new SalesMessageStatus
@@ -16,7 +16,8 @@ public sealed class InMemorySalesMessageStatusStore : ISalesMessageStatusStore
             State = SalesMessageProcessingState.Queued,
             Attempts = 0,
             CreatedAtUtc = now,
-            UpdatedAtUtc = now
+            UpdatedAtUtc = now,
+            PayloadJson = payloadJson
         };
     }
 

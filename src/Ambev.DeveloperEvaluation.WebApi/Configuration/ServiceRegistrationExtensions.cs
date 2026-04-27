@@ -43,8 +43,10 @@ public static class ServiceRegistrationExtensions
             configuration.GetSection(RabbitMqOptions.SectionName));
         services.Configure<SalesMessagingRetryOptions>(
             configuration.GetSection(SalesMessagingRetryOptions.SectionName));
+        services.Configure<SalesMessagingAuditOptions>(
+            configuration.GetSection(SalesMessagingAuditOptions.SectionName));
 
-        services.AddSingleton<ISalesMessageStatusStore, InMemorySalesMessageStatusStore>();
+        services.AddSingleton<ISalesMessageStatusStore, PostgresSalesMessageStatusStore>();
         services.AddSingleton<ISaleCommandPublisher, RabbitMqSaleCommandPublisher>();
         services.AddHostedService<SaleCommandConsumerBackgroundService>();
 

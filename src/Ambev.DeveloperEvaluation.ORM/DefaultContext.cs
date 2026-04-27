@@ -3,6 +3,7 @@ using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.Validation;
 using Ambev.DeveloperEvaluation.Domain.ValueObjects;
+using Ambev.DeveloperEvaluation.ORM.Messaging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
@@ -35,6 +36,8 @@ public class DefaultContext : DbContext
     public DbSet<Cart> Carts { get; set; }
 
     public DbSet<ProductUserRating> ProductRatings { get; set; }
+
+    public DbSet<SalesMessageStatusRecord> SalesMessageStatuses { get; set; }
 
     public DefaultContext(DbContextOptions<DefaultContext> options) : base(options)
     {

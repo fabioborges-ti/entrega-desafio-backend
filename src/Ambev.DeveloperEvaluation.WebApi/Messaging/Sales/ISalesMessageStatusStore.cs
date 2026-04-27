@@ -2,7 +2,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Messaging.Sales;
 
 public interface ISalesMessageStatusStore
 {
-    void MarkQueued(string correlationId, string eventName);
+    void MarkQueued(string correlationId, string eventName, string? payloadJson = null);
     void MarkProcessing(string correlationId, string eventName, int attempts);
     void MarkRetrying(string correlationId, string eventName, int attempts, TimeSpan nextRetryIn, string error);
     void MarkSucceeded(string correlationId, string eventName, int attempts);

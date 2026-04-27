@@ -163,6 +163,9 @@ Configuração em `appsettings`:
   "Retry": {
     "MaxRetries": 3,
     "BackoffSeconds": [2, 5, 15]
+  },
+  "Audit": {
+    "MaxPayloadLength": 64000
   }
 }
 ```
@@ -173,6 +176,12 @@ Comportamento:
 - Falha na tentativa 2 -> espera 5s e republica.
 - Falha na tentativa 3 -> espera 15s e republica.
 - Excedeu `MaxRetries` -> `nack` sem requeue (DLQ).
+
+Auditoria simples (`PayloadJson`):
+
+- O envelope publicado em RabbitMQ é persistido no PostgreSQL para consulta por `correlationId`.
+- `SalesMessaging:Audit:MaxPayloadLength` define o limite máximo de caracteres armazenados.
+- Quando o payload excede o limite, ele é truncado antes da persistência e um warning é registrado em log.
 
 ---
 

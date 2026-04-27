@@ -12,23 +12,27 @@ namespace Ambev.DeveloperEvaluation.WebApi.Messaging.Sales;
 
 public sealed class RabbitMqSaleCommandPublisher : ISaleCommandPublisher
 {
+    private const int DefaultMaxAuditPayloadLength = 64_000;
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
     private readonly RabbitMqOptions _options;
+    private readonly SalesMessagingAuditOptions _auditOptions;
     private readonly ISalesMessageStatusStore _statusStore;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger<RabbitMqSaleCommandPublisher> _logger;
 
     public RabbitMqSaleCommandPublisher(
         IOptions<RabbitMqOptions> options,
+        IOptions<SalesMessagingAuditOptions> auditOptions,
         ISalesMessageStatusStore statusStore,
         IHttpContextAccessor httpContextAccessor,
         ILogger<RabbitMqSaleCommandPublisher> logger)
     {
         _options = options.Value;
+        _auditOptions = auditOptions.Value;
         _statusStore = statusStore;
         _httpContextAccessor = httpContextAccessor;
         _logger = logger;
@@ -88,7 +92,8 @@ public sealed class RabbitMqSaleCommandPublisher : ISaleCommandPublisher
             body: body,
             cancellationToken: cancellationToken);
 
-        _statusStore.MarkQueued(correlationId, routingKey);
+        var auditPayload = BuildAuditPayload(body, correlationId);
+        _statusStore.MarkQueued(correlationId, routingKey, auditPayload);
         _logger.LogInformation(
             "Evento de venda publicado em RabbitMQ. Event: {EventName}, CorrelationId: {CorrelationId}, TraceId: {TraceId}",
             routingKey,
@@ -212,4 +217,23 @@ public sealed class RabbitMqSaleCommandPublisher : ISaleCommandPublisher
             Password = _options.Password,
             VirtualHost = _options.VirtualHost
         };
+
+    private string BuildAuditPayload(byte[] body, string correlationId)
+    {
+        var maxLength = _auditOptions.MaxPayloadLength > 0
+            ? _auditOptions.MaxPayloadLength
+            : DefaultMaxAuditPayloadLength;
+
+        var payload = Encoding.UTF8.GetString(body);
+        if (payload.Length <= maxLength)
+            return payload;
+
+        _logger.LogWarning(
+            "Payload de auditoria truncado. CorrelationId: {CorrelationId}, TamanhoOriginal: {OriginalLength}, Limite: {Limit}",
+            correlationId,
+            payload.Length,
+            maxLength);
+
+        return payload[..maxLength];
+    }
 }
