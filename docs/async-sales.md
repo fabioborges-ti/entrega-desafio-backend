@@ -1,12 +1,12 @@
-# 🧾 Fluxo Assíncrono de Vendas, Carrinho e Estoque
+# Fluxo Assíncrono de Vendas, Carrinho e Estoque
 
 > Documento complementar ao README principal com foco no fluxo operacional completo de compra: montagem de carrinho, baixa/estorno de estoque, criação e manutenção da venda via RabbitMQ.
 
-[Voltar para o README principal](./README.md)
+[Voltar para o README principal](../README.md)
 
 ---
 
-## 🗂️ Índice
+## Índice
 
 - [Visão Geral](#-visão-geral)
 - [Topologia RabbitMQ](#-topologia-rabbitmq)
@@ -15,12 +15,11 @@
 - [Contrato Assíncrono e Status](#-contrato-assíncrono-e-status)
 - [Worker de Alerta de Estoque](#-worker-de-alerta-de-estoque)
 - [Diagrama de Fluxo da Compra](#-diagrama-de-fluxo-da-compra)
-- [Script para Gerar o Diagrama](#-script-para-gerar-o-diagrama)
 - [Como Validar Rapidamente](#-como-validar-rapidamente)
 
 ---
 
-## 🎯 Visão Geral
+## Visão Geral
 
 A solução separa claramente a responsabilidade entre **carrinho** e **venda**:
 
@@ -32,7 +31,7 @@ Esse desenho permite resposta rápida da API (`202 Accepted`) com rastreamento p
 
 ---
 
-## 📨 Topologia RabbitMQ
+## Topologia RabbitMQ
 
 ### Exchange e roteamento
 
@@ -57,7 +56,7 @@ Esse desenho permite resposta rápida da API (`202 Accepted`) com rastreamento p
 
 ---
 
-## 🛒 Jornada de Compra (Passo a Passo)
+## Jornada de Compra (Passo a Passo)
 
 ### 1) Autenticação
 
@@ -108,7 +107,7 @@ Todos retornam `202 Accepted` com `correlationId`.
 
 ---
 
-## 📦 Baixa e Estorno de Estoque
+## Baixa e Estorno de Estoque
 
 ### Quando ocorre baixa
 
@@ -133,11 +132,11 @@ Todos retornam `202 Accepted` com `correlationId`.
   - estorna estoque do cart antigo;
   - remove cart antigo.
 
-Observação importante: a venda em si nao debita estoque; ela consome um carrinho cujo estoque ja foi reservado.
+Observação importante: a venda em si não debita estoque; ela consome um carrinho cujo estoque já foi reservado.
 
 ---
 
-## 📬 Contrato Assíncrono e Status
+## Contrato Assíncrono e Status
 
 ### Resposta padrão de escrita assíncrona
 
@@ -177,21 +176,21 @@ Comportamento:
 
 ---
 
-## 🚨 Worker de Alerta de Estoque
+## Worker de Alerta de Estoque
 
 A aplicação possui um serviço em segundo plano, `StockAlertHostedService`, executando continuamente para monitorar o inventário.
 
 Fluxo do worker:
 
 1. Inicia junto com a API.
-2. Aguarda 30 segundos apos o start.
-3. Em intervalo configuravel (`StockAlert:CheckIntervalMinutes`), consulta produtos com:
+2. Aguarda 30 segundos após o start.
+3. Em intervalo configurável (`StockAlert:CheckIntervalMinutes`), consulta produtos com:
    - `MinimumStockAlert > 0` e
    - `AvailableQuantity <= MinimumStockAlert`.
-4. Quando encontra itens criticos, envia email consolidado para o administrador.
-5. Em erro de envio/execucao, registra log e segue para o proximo ciclo.
+4. Quando encontra itens críticos, envia email consolidado para o administrador.
+5. Em erro de envio/execução, registra log e segue para o próximo ciclo.
 
-Configuracao por ambiente (Docker):
+Configuração por ambiente (Docker):
 
 - `StockAlert__MailjetApiKey` / `MAILJET_API_KEY`
 - `StockAlert__MailjetSecretKey` / `MAILJET_SECRET_KEY`
@@ -201,17 +200,17 @@ Configuracao por ambiente (Docker):
 
 ---
 
-## 🧭 Diagrama de Fluxo da Compra
+## Diagrama de Fluxo da Compra
 
-![Fluxo assíncrono de vendas](./images/fluxo-venda-async.png)
+![Fluxo assíncrono de vendas](../images/fluxo-venda-async.png)
 
 ---
 
-## ✅ Como Validar Rapidamente
+## Como Validar Rapidamente
 
 1. Subir stack com RabbitMQ + PostgreSQL + API.
-2. Criar carrinho em `POST /api/carts` e observar baixa no inventario.
+2. Criar carrinho em `POST /api/carts` e observar baixa no inventário.
 3. Criar venda em `POST /api/sales` e capturar `correlationId`.
-4. Consultar status em `GET /api/sales/messages/{correlationId}` ate `Succeeded`.
-5. Cancelar venda (`POST /api/sales/{id}/cancel`) e confirmar estorno no inventario.
+4. Consultar status em `GET /api/sales/messages/{correlationId}` até `Succeeded`.
+5. Cancelar venda (`POST /api/sales/{id}/cancel`) e confirmar estorno no inventário.
 6. Verificar logs do worker de estoque e, com limiar configurado, confirmar envio de alerta por email.

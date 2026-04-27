@@ -1,6 +1,6 @@
-# Secrets and Environment Configuration
+# Segredos e Configuração de Ambiente
 
-[Back to main README](./README.md)
+[Voltar para o README principal](../README.md)
 
 Este documento descreve como configurar dados sensíveis para execução local com Docker Compose sem expor segredos em `appsettings`.
 

@@ -1,6 +1,6 @@
 # Matriz de Permissões da API
 
-[Voltar para o README principal](./README.md)
+[Voltar para o README principal](../README.md)
 
 Este documento lista os endpoints expostos pela WebApi e resume as permissões exigidas por controller. As regras abaixo refletem os atributos `Authorize`, `AllowAnonymous`, roles e políticas configurados nos controllers.
 
@@ -125,4 +125,4 @@ Este documento lista os endpoints expostos pela WebApi e resume as permissões e
 
 ---
 
-[Voltar para o README principal](./README.md)
+[Voltar para o README principal](../README.md)

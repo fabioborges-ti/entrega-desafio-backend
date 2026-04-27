@@ -205,7 +205,7 @@ A documentação completa está no Swagger/Scalar. Resumo dos recursos:
 | `POST` | `/api/sales/{id}/cancel` | `202 Accepted` | Cancela venda (assíncrono) |
 | `DELETE` | `/api/sales/{id}` | `202 Accepted` | Remove venda (assíncrono) |
 
-> Operações de escrita retornam `{ correlationId }` para rastreamento do processamento. Veja [README.sales-async.md](./README.sales-async.md) para o fluxo completo.
+> Operações de escrita retornam `{ correlationId }` para rastreamento do processamento. Veja [docs/async-sales.md](./docs/async-sales.md) para o fluxo completo.
 
 ### 🛍️ Outros Recursos
 | Recurso | Base Path |
@@ -386,10 +386,10 @@ dotnet test tests/Ambev.DeveloperEvaluation.Unit
 
 | Arquivo | Conteúdo |
 |---|---|
-| [README.defesas-tecnicas.md](./README.defesas-tecnicas.md) | Decisões técnicas, interpretações do desafio e trade-offs da solução |
-| [README.sales-async.md](./README.sales-async.md) | Filas, correlationId, fluxo assíncrono de vendas |
-| [README.secrets.md](./README.secrets.md) | Variáveis de ambiente, `.env`, segredos JWT |
-| [README.permissions.md](./README.permissions.md) | Controllers, endpoints e matriz de permissões por role |
+| [docs/adr/README.md](./docs/adr/README.md) | ADRs leves com decisões técnicas e trade-offs da solução |
+| [docs/async-sales.md](./docs/async-sales.md) | Filas, correlationId, fluxo assíncrono de vendas |
+| [docs/secrets-env.md](./docs/secrets-env.md) | Variáveis de ambiente, `.env`, segredos JWT |
+| [docs/permissions-matrix.md](./docs/permissions-matrix.md) | Controllers, endpoints e matriz de permissões por role |
 
 ---
 
