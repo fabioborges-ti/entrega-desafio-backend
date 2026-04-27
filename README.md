@@ -386,6 +386,7 @@ dotnet test tests/Ambev.DeveloperEvaluation.Unit
 
 | Arquivo | Conteúdo |
 |---|---|
+| [README.defesas-tecnicas.md](./README.defesas-tecnicas.md) | Decisões técnicas, interpretações do desafio e trade-offs da solução |
 | [README.sales-async.md](./README.sales-async.md) | Filas, correlationId, fluxo assíncrono de vendas |
 | [README.secrets.md](./README.secrets.md) | Variáveis de ambiente, `.env`, segredos JWT |
 | [README.permissions.md](./README.permissions.md) | Controllers, endpoints e matriz de permissões por role |
