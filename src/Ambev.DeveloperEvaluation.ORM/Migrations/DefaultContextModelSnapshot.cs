@@ -412,6 +412,9 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
                     b.Property<int?>("NextRetryInSeconds")
                         .HasColumnType("integer");
 
+                    b.Property<string>("PayloadJson")
+                        .HasColumnType("jsonb");
+
                     b.Property<string>("State")
                         .IsRequired()
                         .HasMaxLength(40)

@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Enums;
@@ -68,6 +69,27 @@ public sealed class AsyncCreateSaleApiIntegrationTests
         Assert.Equal(0.10m, item.DiscountPercent);
         Assert.Equal(9m, item.DiscountAmount);
         Assert.Equal(81m, item.LineTotal);
+    }
+
+    [Fact]
+    public async Task GetSalesMessageStatus_WithUnknownCorrelationId_ReturnsNotFound()
+    {
+        await _fixture.ResetDatabaseAsync();
+
+        await using var db = _fixture.CreateContext();
+        var seed = await SeedSaleScenarioAsync(db);
+
+        using var client = _fixture.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Bearer",
+            CreateJwtFor(seed.User));
+
+        var unknownCorrelationId = Guid.NewGuid().ToString("N");
+        var response = await client.GetAsync($"/api/sales/messages/{unknownCorrelationId}");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        var body = await response.Content.ReadAsStringAsync();
+        Assert.False(string.IsNullOrWhiteSpace(body));
     }
 
     private async Task<Sale> WaitForSaleAsync(string saleNumber, TimeSpan timeout)
@@ -198,4 +220,5 @@ public sealed class AsyncCreateSaleApiIntegrationTests
         int ProductId,
         int CartId,
         int Quantity);
+
 }

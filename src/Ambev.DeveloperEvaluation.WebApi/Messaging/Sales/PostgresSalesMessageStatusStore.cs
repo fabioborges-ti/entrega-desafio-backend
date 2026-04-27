@@ -1,6 +1,7 @@
 using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.ORM.Messaging;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Messaging.Sales;
 
@@ -114,29 +115,45 @@ public sealed class PostgresSalesMessageStatusStore : ISalesMessageStatusStore
         using var scope = _scopeFactory.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<DefaultContext>();
 
-        var record = dbContext.SalesMessageStatuses
-            .FirstOrDefault(x => x.CorrelationId == correlationId);
-
-        if (record == null)
+        for (var attempt = 0; attempt < 2; attempt++)
         {
-            record = new SalesMessageStatusRecord
+            var record = dbContext.SalesMessageStatuses
+                .FirstOrDefault(x => x.CorrelationId == correlationId);
+
+            if (record == null)
             {
-                CorrelationId = correlationId,
-                EventName = eventName,
-                CreatedAtUtc = DateTime.UtcNow,
-                UpdatedAtUtc = DateTime.UtcNow,
-                State = SalesMessageProcessingState.Queued.ToString()
-            };
-            dbContext.SalesMessageStatuses.Add(record);
+                record = new SalesMessageStatusRecord
+                {
+                    CorrelationId = correlationId,
+                    EventName = eventName,
+                    CreatedAtUtc = DateTime.UtcNow,
+                    UpdatedAtUtc = DateTime.UtcNow,
+                    State = SalesMessageProcessingState.Queued.ToString()
+                };
+                dbContext.SalesMessageStatuses.Add(record);
+            }
+
+            record.EventName = eventName;
+            updateAction(record);
+            if (record.CreatedAtUtc == default)
+                record.CreatedAtUtc = DateTime.UtcNow;
+            if (record.UpdatedAtUtc == default)
+                record.UpdatedAtUtc = DateTime.UtcNow;
+
+            try
+            {
+                dbContext.SaveChanges();
+                return;
+            }
+            catch (DbUpdateException ex) when (
+                ex.InnerException is PostgresException postgresEx &&
+                postgresEx.SqlState == PostgresErrorCodes.UniqueViolation &&
+                attempt == 0)
+            {
+                // Concorrência entre produtores/consumidores pode tentar inserir a mesma PK.
+                // Recarrega o contexto para converter a operação em update na segunda tentativa.
+                dbContext.ChangeTracker.Clear();
+            }
         }
-
-        record.EventName = eventName;
-        updateAction(record);
-        if (record.CreatedAtUtc == default)
-            record.CreatedAtUtc = DateTime.UtcNow;
-        if (record.UpdatedAtUtc == default)
-            record.UpdatedAtUtc = DateTime.UtcNow;
-
-        dbContext.SaveChanges();
     }
 }
